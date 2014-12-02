@@ -134,6 +134,27 @@ public class WDProviderTests {
     }
 
     @Test
+    public void getJsExecutorTest() {
+        WDService service = WDServiceProvider.getInstance();
+        service.init();
+        assertNotNull(service.getJsExecutor());
+    }
+
+    @Test
+    public void getScreenshotMaker() {
+        WDService service = WDServiceProvider.getInstance();
+        service.init();
+        assertNotNull(service.getScreenshotMaker());
+    }
+
+    @Test
+    public void getDefWebDriverWait() {
+        WDService service = WDServiceProvider.getInstance();
+        service.init();
+        assertNotNull(service.getDefWebDriverWait());
+    }
+
+    @Test
     public void singleThreadingInstanceTest() {
         WDService service = WDServiceProvider.getInstance();
         service.init();
