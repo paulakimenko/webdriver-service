@@ -34,9 +34,9 @@ public class WDProviderTests {
 
     @Test
     public void baseInitTest() {
-        WDService factory = WDServiceProvider.getInstance();
-        factory.init();
-        WebDriver driver = factory.getDriver();
+        WDService service = WDServiceProvider.getInstance();
+        service.init();
+        WebDriver driver = service.getDriver();
         assertNotNull(driver);
         assertTrue(driver instanceof FirefoxDriver);
     }
@@ -44,43 +44,43 @@ public class WDProviderTests {
     @Test(expectedExceptions = {RuntimeException.class},
             expectedExceptionsMessageRegExp = "WebDriver has been already initialized.*")
     public void doubleInitTest() {
-        WDService factory = WDServiceProvider.getInstance();
-        factory.init();
-        factory.init();
+        WDService service = WDServiceProvider.getInstance();
+        service.init();
+        service.init();
     }
 
     @Test
     public void fromBuilderInitTest() {
-        WDService factory = WDServiceProvider.getInstance();
-        factory.setProperties(
+        WDService service = WDServiceProvider.getInstance();
+        service.setProperties(
                 new WDProperties.Builder()
                         .driver(Driver.FIREFOX)
                         .build()
         );
-        factory.init();
-        WebDriver driver = factory.getDriver();
+        service.init();
+        WebDriver driver = service.getDriver();
         assertNotNull(driver);
         assertTrue(driver instanceof FirefoxDriver);
     }
 
     @Test
     public void fromMapInitTest() {
-        WDService factory = WDServiceProvider.getInstance();
+        WDService service = WDServiceProvider.getInstance();
         Map<String, String> map = new HashMap<>();
         map.put(PropertyKey.DRIVER, "firefox");
-        factory.setProperties(new WDProperties.Builder(map).build());
-        factory.init();
-        WebDriver driver = factory.getDriver();
+        service.setProperties(new WDProperties.Builder(map).build());
+        service.init();
+        WebDriver driver = service.getDriver();
         assertNotNull(driver);
         assertTrue(driver instanceof FirefoxDriver);
     }
 
     @Test
     public void fromSysPropsInitTest() {
-        WDService factory = WDServiceProvider.getInstance();
+        WDService service = WDServiceProvider.getInstance();
         System.setProperty(PropertyKey.DRIVER, "htmlunit");
-        factory.init();
-        WebDriver driver = factory.getDriver();
+        service.init();
+        WebDriver driver = service.getDriver();
         assertNotNull(driver);
         assertTrue(driver instanceof HtmlUnitDriver);
     }
@@ -88,56 +88,56 @@ public class WDProviderTests {
     @Test(expectedExceptions = {NullPointerException.class},
             expectedExceptionsMessageRegExp = "WebDriver has been not initialized.*")
     public void terminateTest() {
-        WDService factory = WDServiceProvider.getInstance();
-        factory.init();
-        assertNotNull(factory.getDriver());
-        factory.terminate();
-        assertNull(factory.getDriver());
+        WDService service = WDServiceProvider.getInstance();
+        service.init();
+        assertNotNull(service.getDriver());
+        service.terminate();
+        assertNull(service.getDriver());
     }
 
     @Test
     public void firstWrapDriverTest() {
-        WDService factory = WDServiceProvider.getInstance();
-        factory.init();
-        assertNotNull(factory.getDriver());
-        factory.wrapWith(MockWrapsWebDriverImpl.class);
-        assertTrue(factory.getDriver() instanceof WebDriver);
-        assertTrue(factory.getDriver() instanceof WrapsDriver);
-        assertTrue(factory.getDriver() instanceof MockWrapsWebDriverImpl);
-        assertTrue(((WrapsDriver) factory.getDriver()).getWrappedDriver() instanceof FirefoxDriver);
+        WDService service = WDServiceProvider.getInstance();
+        service.init();
+        assertNotNull(service.getDriver());
+        service.wrapWith(MockWrapsWebDriverImpl.class);
+        assertTrue(service.getDriver() instanceof WebDriver);
+        assertTrue(service.getDriver() instanceof WrapsDriver);
+        assertTrue(service.getDriver() instanceof MockWrapsWebDriverImpl);
+        assertTrue(((WrapsDriver) service.getDriver()).getWrappedDriver() instanceof FirefoxDriver);
     }
 
     @Test
     public void secondWrapDriverTest() {
-        WDService factory = WDServiceProvider.getInstance();
-        factory.init();
-        assertNotNull(factory.getDriver());
-        factory.wrapWith(new Function<WebDriver, WrapsDriver>() {
+        WDService service = WDServiceProvider.getInstance();
+        service.init();
+        assertNotNull(service.getDriver());
+        service.wrapWith(new Function<WebDriver, WrapsDriver>() {
             @Override
             public WrapsDriver apply(WebDriver input) {
                 return new MockWrapsWebDriverImpl(input);
             }
         });
-        assertTrue(factory.getDriver() instanceof WebDriver);
-        assertTrue(factory.getDriver() instanceof WrapsDriver);
-        assertTrue(factory.getDriver() instanceof MockWrapsWebDriverImpl);
-        assertTrue(((WrapsDriver) factory.getDriver()).getWrappedDriver() instanceof FirefoxDriver);
+        assertTrue(service.getDriver() instanceof WebDriver);
+        assertTrue(service.getDriver() instanceof WrapsDriver);
+        assertTrue(service.getDriver() instanceof MockWrapsWebDriverImpl);
+        assertTrue(((WrapsDriver) service.getDriver()).getWrappedDriver() instanceof FirefoxDriver);
     }
 
     @Test
     public void setCustomDriverTest() {
-        WDService factory = WDServiceProvider.getInstance();
+        WDService service = WDServiceProvider.getInstance();
         WebDriver driver = new HtmlUnitDriver();
-        factory.setCustomDriver(driver);
-        assertNotNull(factory.getDriver());
-        assertEquals(factory.getDriver(), driver);
+        service.setCustomDriver(driver);
+        assertNotNull(service.getDriver());
+        assertEquals(service.getDriver(), driver);
     }
 
     @Test
     public void singleThreadingInstanceTest() {
-        WDService factory = WDServiceProvider.getInstance();
-        factory.init();
-        assertEquals(WDServiceProvider.getInstance().getDriver(), factory.getDriver());
+        WDService service = WDServiceProvider.getInstance();
+        service.init();
+        assertEquals(WDServiceProvider.getInstance().getDriver(), service.getDriver());
     }
 
     @Test
@@ -148,9 +148,9 @@ public class WDProviderTests {
     @AfterMethod
     public void tearDown() {
         try {
-            WDService factory = WDServiceProvider.getInstance();
-            factory.terminate();
-            factory.setProperties(null);
+            WDService service = WDServiceProvider.getInstance();
+            service.terminate();
+            service.setProperties(null);
             System.clearProperty(PropertyKey.DRIVER);
         } catch (NullPointerException ignored) {}
     }
