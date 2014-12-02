@@ -96,8 +96,9 @@ public class WDServiceProvider implements WDService {
                 break;
             case PHANTOMJS:
                 driver = capabilities == null
-                        ? new PhantomJSDriver()
+                        ? new PhantomJSDriver(DesiredCapabilities.phantomjs())
                         : new PhantomJSDriver(capabilities);
+                break;
             default:
                 throw new IllegalArgumentException("Given driver type has been not implemented yet.");
         }
