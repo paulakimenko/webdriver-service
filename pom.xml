@@ -4,7 +4,7 @@
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
 
-    <groupId>com.paulakimenko</groupId>
+    <groupId>com.github.paulakimenko</groupId>
     <artifactId>webdriver-service</artifactId>
     <version>0.1-SNAPSHOT</version>
     <packaging>jar</packaging>
@@ -15,7 +15,7 @@
 
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-        <selenium.version>2.44.0</selenium.version>
+        <selenium.version>2.41.0</selenium.version>
         <opera.driver.version>1.5</opera.driver.version>
         <phantomjs.driver.version>1.2.0</phantomjs.driver.version>
         <testng.version>6.8.8</testng.version>
