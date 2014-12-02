@@ -11,14 +11,18 @@ import org.openqa.selenium.support.ui.WebDriverWait;
 public interface WDService {
     /**
      * Initiate WebDriver with current properties. Timeouts will be enabled.
+     * <p>
      * Throws RuntimeException with "WebDriver has been already initialized. Terminate it first.".
+     * <p>
      * Throws IllegalArgumentException with "Given driver type has been not implemented yet.".
      */
     void init();
 
     /**
      * Initiate WebDriver with current properties and capabilities.
+     * <p>
      * Throws RuntimeException with "WebDriver has been already initialized. Terminate it first.".
+     * <p>
      * Throws IllegalArgumentException with "Given driver type has been not implemented yet.".
      * @param capabilities driver capabilities
      */
@@ -48,6 +52,7 @@ public interface WDService {
 
     /**
      * Wraps current WebDriver with wrapper(must implement WebDriver, WrapsDriver).
+     * <p>
      * Throws IllegalArgumentException with "transformFunction doesn't produce WebDriver instance".
      * @param transformFunction function to wrap current driver with wrapped
      */
@@ -55,7 +60,9 @@ public interface WDService {
 
     /**
      * Wraps current WebDriver with wrapper(must implements WebDriver, WrapsDriver).
+     * <p>
      * Throws IllegalArgumentException with "Wrapper class is not instance of WebDriver.".
+     * <p>
      * Throws InstantiationException, IllegalAccessException, InvocationTargetException, NoSuchMethodException.
      * @param driverWrapperClass WebDriver wrapped class with (WebDriver instance) constructor
      * @param <T> must implement WebDriver, WrapsDriver
@@ -70,6 +77,7 @@ public interface WDService {
 
     /**
      * Get current WebDriver instance.
+     * <p>
      * Throws NullPointerException with "WebDriver has been not initialized. Try to call init() first.".
      * @return current WebDriver instance
      */

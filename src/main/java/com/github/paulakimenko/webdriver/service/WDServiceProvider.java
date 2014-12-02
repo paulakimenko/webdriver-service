@@ -25,6 +25,7 @@ import java.util.concurrent.TimeUnit;
 
 /**
  * Implementation of WDService.
+ * <p>
  * Uses java.lang.ThreadLocal for generating of thread local instances.
  */
 public class WDServiceProvider implements WDService {

@@ -57,6 +57,7 @@ public final class WDProperties {
 
     /**
      * Get remote browser name.
+     * <p>
      * Method name from org.openqa.selenium.remote.DesiredCapabilities.
      * Example : firefox.
      * @return remote browser name
@@ -100,6 +101,7 @@ public final class WDProperties {
 
     /**
      * Get default WebDriver fluent wait timeout.
+     * <p>
      * Used in com.github.paulakimenko.webdriver.service.getDefWebDriverWait() method.
      * @return default WebDriver fluent wait timeout
      */
@@ -109,6 +111,7 @@ public final class WDProperties {
 
     /**
      * Get WDProperties instance from java.util.Properties.
+     * <p>
      * Uses constants from PropertyKey as keys.
      * @param properties given Properties instance
      * @return WDProperties instance
@@ -123,6 +126,7 @@ public final class WDProperties {
 
     /**
      * Get WDProperties instance from system properties.
+     * <p>
      * Uses constants from PropertyKey as keys.
      * @return WDProperties instance
      */
@@ -193,6 +197,7 @@ public final class WDProperties {
 
         /**
          * Build from Map.
+         * <p>
          * Uses constants from PropertyKey as keys.
          * @param map map with values
          */
@@ -210,6 +215,7 @@ public final class WDProperties {
 
         /**
          * Build from suite properties of org.testng.ITestContext.
+         * <p>
          * Uses constants from PropertyKey as keys.
          * @param context instance on org.testng.ITestContext
          */
@@ -356,6 +362,7 @@ public final class WDProperties {
 
         /**
          * Set default WebDriver fluent wait timeout.
+         * <p>
          * Used in com.github.paulakimenko.webdriver.service.getDefWebDriverWait() method.
          * @param fluentWaitTimeout default WebDriver fluent wait timeout
          * @return this Builder instance
@@ -367,6 +374,7 @@ public final class WDProperties {
 
         /**
          * Set default WebDriver fluent wait timeout.
+         * <p>
          * Used in com.github.paulakimenko.webdriver.service.WDService.getDefWebDriverWait() method.
          * @param fluentWaitTimeoutInString default WebDriver fluent wait timeout in String
          * @return this Builder instance
