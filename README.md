@@ -41,6 +41,7 @@ Maven dependency
 
 Basic example:
 
+```java
     import com.github.paulakimenko.webdriver.service.WDService;
     import com.github.paulakimenko.webdriver.service.WDServiceProvider;
     import org.openqa.selenium.By;
@@ -69,14 +70,18 @@ Basic example:
             service.terminate();
         }
     }
+```
 
 Using Capabilities in initialization:
 
+```java
     WDService service = WDServiceProvider.getInstance();
     service.init(new DesiredCapabilities());
+```
 
 Explicit usage of Properties:
 
+```java
     WDProperties properties = new WDProperties.Builder()
             .driver(Driver.CHROME)
             .implicitlyWait(5)
@@ -87,23 +92,29 @@ Explicit usage of Properties:
     WDService service = WDServiceProvider.getInstance();
     service.setProperties(properties);
     service.init(DesiredCapabilities.chrome());
+```
 
 Additional instances example:
 
+```java
     WDService service = WDServiceProvider.getInstance();
     service.init();
     JavascriptExecutor javascriptExecutor = service.getJsExecutor();
     TakesScreenshot takesScreenshot = service.getScreenshotMaker();
     Wait<WebDriver> wait = service.getDefWebDriverWait();
+```
 
+```java
 Wrapping example:
 
     WDService service = WDServiceProvider.getInstance();
     service.init();
     service.wrapWith(SomeWebDriverWrapper.class);
+```
 
 Another wrapping example (more complex):
 
+```java
     WDService service = WDServiceProvider.getInstance();
     service.init();
     service.wrapWith(new Function<WebDriver, WrapsDriver>() {
@@ -112,6 +123,7 @@ Another wrapping example (more complex):
             return new SomeWebDriverWrapper(driver, [some args...]);
         }
     });
+```
 
 ## Contact
 Mail: [paulakimenko@gmail.com](mailto:paulakimenko@gmail.com)
