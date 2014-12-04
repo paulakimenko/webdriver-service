@@ -6,6 +6,16 @@
 Selenium [WebDriver] service. Provides needed [WebDriver] instance with base properties. Uses different ways to configure.
 See JavaDocs here (TBD).
 
+Maven dependency
+
+```xml
+<dependency>
+    <groupId>com.github.paulakimenko</groupId>
+    <artifactId>webdriver-service</artifactId>
+    <version>0.1</version>
+</dependency>
+```
+
 ##Supported drivers:
 
  - Selenium Remote WebDriver;
