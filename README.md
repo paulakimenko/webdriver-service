@@ -104,9 +104,9 @@ Additional instances example:
     Wait<WebDriver> wait = service.getDefWebDriverWait();
 ```
 
-```java
 Wrapping example:
 
+```java
     WDService service = WDServiceProvider.getInstance();
     service.init();
     service.wrapWith(SomeWebDriverWrapper.class);
