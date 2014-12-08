@@ -42,87 +42,87 @@ Maven dependency
 Basic example:
 
 ```java
-    import com.github.paulakimenko.webdriver.service.WDService;
-    import com.github.paulakimenko.webdriver.service.WDServiceProvider;
-    import org.openqa.selenium.By;
-    import org.openqa.selenium.WebDriver;
-    import org.testng.annotations.AfterTest;
-    import org.testng.annotations.BeforeTest;
-    import org.testng.annotations.Test;
+import com.github.paulakimenko.webdriver.service.WDService;
+import com.github.paulakimenko.webdriver.service.WDServiceProvider;
+import org.openqa.selenium.By;
+import org.openqa.selenium.WebDriver;
+import org.testng.annotations.AfterTest;
+import org.testng.annotations.BeforeTest;
+import org.testng.annotations.Test;
 
-    public class ExampleTest {
-        private static WDService service = WDServiceProvider.getInstance();
+public class ExampleTest {
+    private static WDService service = WDServiceProvider.getInstance();
 
-        @BeforeTest
-        public void setUpTest() {
-            service.init();
-        }
-
-        @Test
-        public void test() {
-            WebDriver driver = service.getDriver();
-            driver.get("http://url.com/");
-            driver.findElement(By.id("id")).click();
-        }
-
-        @AfterTest
-        public void tearDownTest() {
-            service.terminate();
-        }
+    @BeforeTest
+    public void setUpTest() {
+        service.init();
     }
+
+    @Test
+    public void test() {
+        WebDriver driver = service.getDriver();
+        driver.get("http://url.com/");
+        driver.findElement(By.id("id")).click();
+    }
+
+    @AfterTest
+    public void tearDownTest() {
+        service.terminate();
+    }
+}
 ```
 
 Using Capabilities in initialization:
 
 ```java
-    WDService service = WDServiceProvider.getInstance();
-    service.init(new DesiredCapabilities());
+WDService service = WDServiceProvider.getInstance();
+service.init(new DesiredCapabilities());
 ```
 
 Explicit usage of Properties:
 
 ```java
-    WDProperties properties = new WDProperties.Builder()
-            .driver(Driver.CHROME)
-            .implicitlyWait(5)
-            .fluentWaitTimeout(10)
-            .timeUnit(TimeUnit.SECONDS)
-            .build();
+WDProperties properties = new WDProperties.Builder()
+        .driver(Driver.CHROME)
+        .implicitlyWait(5)
+        .fluentWaitTimeout(10)
+        .timeUnit(TimeUnit.SECONDS)
+        .build();
 
-    WDService service = WDServiceProvider.getInstance();
-    service.setProperties(properties);
-    service.init(DesiredCapabilities.chrome());
+WDService service = WDServiceProvider.getInstance();
+service.setProperties(properties);
+service.init(DesiredCapabilities.chrome());
 ```
 
 Additional instances example:
 
 ```java
-    WDService service = WDServiceProvider.getInstance();
-    service.init();
-    JavascriptExecutor javascriptExecutor = service.getJsExecutor();
-    TakesScreenshot takesScreenshot = service.getScreenshotMaker();
-    Wait<WebDriver> wait = service.getDefWebDriverWait();
+WDService service = WDServiceProvider.getInstance();
+service.init();
+JavascriptExecutor javascriptExecutor = service.getJsExecutor();
+TakesScreenshot takesScreenshot = service.getScreenshotMaker();
+Wait<WebDriver> wait = service.getDefWebDriverWait();
 ```
 
 Wrapping example:
 
 ```java
-    WDService service = WDServiceProvider.getInstance();
-    service.init();
-    service.wrapWith(SomeWebDriverWrapper.class);
+WDService service = WDServiceProvider.getInstance();
+service.init();
+service.wrapWith(SomeWebDriverWrapper.class);
 ```
 
 Another wrapping example (more complex):
 
 ```java
-    WDService service = WDServiceProvider.getInstance();
-    service.init();
-    service.wrapWith(new Function<WebDriver, WrapsDriver>() {
-        @Override
-        public WrapsDriver apply(WebDriver driver) {
-            return new SomeWebDriverWrapper(driver, [some args...]);
-        }
-    });
+WDService service = WDServiceProvider.getInstance();
+service.init();
+service.wrapWith(new Function<WebDriver, WrapsDriver>() {
+    @Override
+    public WrapsDriver apply(WebDriver driver) {
+        return new SomeWebDriverWrapper(driver, [some args...]);
+    }
+});
 ```
 
 ## Contact
