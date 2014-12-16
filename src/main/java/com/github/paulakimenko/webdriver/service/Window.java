@@ -11,7 +11,7 @@ public final class Window {
 
     /**
      * Transform given dimension in string to int array.
-     * Example : "1400x900" -> "[1400, 900]".
+     * Example : "1400x900" to "[1400, 900]".
      * @param dimensionInString window dimension [width]x[height]
      * @return int array with two elements
      */
