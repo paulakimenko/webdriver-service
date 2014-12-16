@@ -27,6 +27,7 @@ public final class WDProperties {
     private final long pageLoadTimeout;
     private final long scriptTimeout;
     private final long fluentWaitTimeout;
+    private final String windowSize;
 
     private WDProperties(Builder builder) {
         this.driver = builder.driver;
@@ -37,6 +38,7 @@ public final class WDProperties {
         this.pageLoadTimeout = builder.pageLoadTimeout;
         this.scriptTimeout = builder.scriptTimeout;
         this.fluentWaitTimeout = builder.fluentWaitTimeout;
+        this.windowSize = builder.windowSize;
     }
 
     /**
@@ -109,6 +111,10 @@ public final class WDProperties {
         return fluentWaitTimeout;
     }
 
+    public String getWindowSize() {
+        return windowSize;
+    }
+
     /**
      * Get WDProperties instance from java.util.Properties.
      * <p>
@@ -145,6 +151,7 @@ public final class WDProperties {
         sb.append(", pageLoadTimeout=").append(pageLoadTimeout);
         sb.append(", scriptTimeout=").append(scriptTimeout);
         sb.append(", fluentWaitTimeout=").append(fluentWaitTimeout);
+        sb.append(", windowSize='").append(windowSize).append('\'');
         sb.append('}');
         return sb.toString();
     }
@@ -161,6 +168,7 @@ public final class WDProperties {
         private long pageLoadTimeout;
         private long scriptTimeout;
         private long fluentWaitTimeout;
+        private String windowSize;
 
         /**
          * Build default properties.
@@ -173,6 +181,7 @@ public final class WDProperties {
             this.pageLoadTimeout = 5;
             this.scriptTimeout = 5;
             this.fluentWaitTimeout = 5;
+            this.windowSize = Window.DEFAULT;
             try {
                 this.remoteAddress = new URL("http://localhost:4444/wd/hub");
             } catch (MalformedURLException e) {
@@ -193,6 +202,7 @@ public final class WDProperties {
             this.pageLoadTimeout = properties.pageLoadTimeout;
             this.scriptTimeout = properties.scriptTimeout;
             this.fluentWaitTimeout = properties.fluentWaitTimeout;
+            this.windowSize = properties.windowSize;
         }
 
         /**
@@ -211,6 +221,7 @@ public final class WDProperties {
             if (map.containsKey(PropertyKey.PAGE_LOAD_TIMEOUT)) pageLoadTimeout(map.get(PropertyKey.PAGE_LOAD_TIMEOUT));
             if (map.containsKey(PropertyKey.SCRIPT_TIMEOUT)) scriptTimeout(map.get(PropertyKey.SCRIPT_TIMEOUT));
             if (map.containsKey(PropertyKey.FLUENT_WAIT_TIMEOUT)) fluentWaitTimeout(map.get(PropertyKey.FLUENT_WAIT_TIMEOUT));
+            if (map.containsKey(PropertyKey.WINDOW_SIZE)) windowSize(map.get(PropertyKey.WINDOW_SIZE));
         }
 
         /**
@@ -222,7 +233,8 @@ public final class WDProperties {
         public Builder(ITestContext context) {
             this(getMapFromSuiteProps(context.getSuite(), Sets.newHashSet(
                     PropertyKey.DRIVER, PropertyKey.REMOTE_ADDRESS, PropertyKey.REMOTE_BROWSER, PropertyKey.TIME_UNIT,
-                    PropertyKey.IMPLICITLY_WAIT, PropertyKey.PAGE_LOAD_TIMEOUT, PropertyKey.SCRIPT_TIMEOUT, PropertyKey.FLUENT_WAIT_TIMEOUT
+                    PropertyKey.IMPLICITLY_WAIT, PropertyKey.PAGE_LOAD_TIMEOUT, PropertyKey.SCRIPT_TIMEOUT, PropertyKey.FLUENT_WAIT_TIMEOUT,
+                    PropertyKey.WINDOW_SIZE
             )));
         }
 
@@ -381,6 +393,11 @@ public final class WDProperties {
          */
         public Builder fluentWaitTimeout(String fluentWaitTimeoutInString) {
             this.fluentWaitTimeout = Long.valueOf(fluentWaitTimeoutInString);
+            return this;
+        }
+
+        public Builder windowSize(String windowSize) {
+            this.windowSize = windowSize;
             return this;
         }
 
