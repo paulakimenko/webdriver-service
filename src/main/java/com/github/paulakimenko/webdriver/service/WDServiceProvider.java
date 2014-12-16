@@ -3,11 +3,13 @@ package com.github.paulakimenko.webdriver.service;
 import com.google.common.base.Function;
 import com.opera.core.systems.OperaDriver;
 import org.openqa.selenium.Capabilities;
+import org.openqa.selenium.Dimension;
 import org.openqa.selenium.JavascriptExecutor;
 import org.openqa.selenium.TakesScreenshot;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.chrome.ChromeDriver;
 import org.openqa.selenium.firefox.FirefoxDriver;
+import org.openqa.selenium.firefox.FirefoxProfile;
 import org.openqa.selenium.htmlunit.HtmlUnitDriver;
 import org.openqa.selenium.ie.InternetExplorerDriver;
 import org.openqa.selenium.internal.WrapsDriver;
@@ -45,11 +47,18 @@ public class WDServiceProvider implements WDService {
     }
 
     /**
-     * Get single instance on WDService for current thread.
-     * @return single instance on WDService for current thread
+     * Get single instance (or create new) of WDService for current thread.
+     * @return single instance of WDService for current thread
      */
     public static WDService getInstance() {
         return THREAD_LOCAL.get();
+    }
+
+    /**
+     * Remove current thread instance.
+     */
+    public static void removeInstance() {
+        THREAD_LOCAL.remove();
     }
 
     @Override
@@ -75,7 +84,8 @@ public class WDServiceProvider implements WDService {
                 driver = ThreadGuard.protect(new Augmenter().augment(remoteWebDriver));
                 break;
             case FIREFOX:
-                driver = new FirefoxDriver(capabilities);
+                //driver = new FirefoxDriver(capabilities);
+                driver = new FirefoxDriver(new FirefoxProfile());
                 break;
             case CHROME:
                 driver = new ChromeDriver(capabilities);
@@ -103,6 +113,7 @@ public class WDServiceProvider implements WDService {
             default:
                 throw new IllegalArgumentException("Given driver type has been not implemented yet.");
         }
+        changeWindowSize();
         enableTimeouts();
     }
 
@@ -199,6 +210,22 @@ public class WDServiceProvider implements WDService {
         timeouts.implicitlyWait(implicitlyWait, timeUnit);
         timeouts.pageLoadTimeout(pageLoadTimeout, timeUnit);
         timeouts.setScriptTimeout(scriptTimeout, timeUnit);
+    }
+
+    private void changeWindowSize() {
+        String windowSize = properties.getWindowSize().toLowerCase();
+
+        switch (windowSize) {
+            case "":
+            case Window.DEFAULT:
+                break;
+            case Window.MAXIMIZE:
+                driver.manage().window().maximize();
+                break;
+            default:
+                int[] dimension = Window.dimension(windowSize);
+                driver.manage().window().setSize(new Dimension(dimension[0], dimension[1]));
+        }
     }
 
     private static Capabilities getCapabilitiesByName(String capabilityName) {
