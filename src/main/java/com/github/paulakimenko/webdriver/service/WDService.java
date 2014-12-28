@@ -19,16 +19,6 @@ public interface WDService {
     void init();
 
     /**
-     * Initiate WebDriver with current properties and capabilities.
-     * <p>
-     * Throws RuntimeException with "WebDriver has been already initialized. Terminate it first.".
-     * <p>
-     * Throws IllegalArgumentException with "Given driver type has been not implemented yet.".
-     * @param capabilities driver capabilities
-     */
-    void init(Capabilities capabilities);
-
-    /**
      * Invoke close() and quit() methods and assign to null driver variable.
      * Throws NullPointerException with "WebDriver has been not initialized.".
      */
@@ -43,12 +33,6 @@ public interface WDService {
      * Disable timeouts for WebDriver (assign it to 0).
      */
     void disableTimeouts();
-
-    /**
-     * Set custom WebDriverProperties
-     * @param properties custom WebDriverProperties
-     */
-    void setProperties(WDProperties properties);
 
     /**
      * Wraps current WebDriver with wrapper(must implement WebDriver, WrapsDriver).
@@ -68,6 +52,12 @@ public interface WDService {
      * @param <T> must implement WebDriver, WrapsDriver
      */
     <T extends WrapsDriver> void wrapWith(Class<T> driverWrapperClass);
+
+    /**
+     * Set Capabilities.
+     * @param capabilities Capabilities
+     */
+    void setCapabilities(Capabilities capabilities);
 
     /**
      * Set custom instance of WebDriver to provide it.
