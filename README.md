@@ -12,7 +12,7 @@ Maven dependency
 <dependency>
     <groupId>com.github.paulakimenko</groupId>
     <artifactId>webdriver-service</artifactId>
-    <version>0.1</version>
+    <version>0.3</version>
 </dependency>
 ```
 

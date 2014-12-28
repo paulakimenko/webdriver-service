@@ -78,26 +78,25 @@ public interface WDService {
     /**
      * Get current WebDriver instance.
      * <p>
-     * Throws NullPointerException with "WebDriver has been not initialized. Try to call init() first.".
-     * @return current WebDriver instance
+     * @return current WebDriver instance, or null if WebDriver instance hasn't initialized
      */
     WebDriver getDriver();
 
     /**
      * Get JavascriptExecutor instance for current WebDriver instance.
-     * @return JavascriptExecutor instance
+     * @return JavascriptExecutor instance, or null if WebDriver instance hasn't initialized
      */
     JavascriptExecutor getJsExecutor();
 
     /**
      * Get TakesScreenshot instance for current WebDriver instance.
-     * @return TakesScreenshot instance
+     * @return TakesScreenshot instance, or null if WebDriver instance hasn't initialized
      */
     TakesScreenshot getScreenshotMaker();
 
     /**
      * Get WebDriverWait instance for current WebDriver instance.
-     * @return WebDriverWait instance
+     * @return WebDriverWait instance, or null if WebDriver instance hasn't initialized
      */
     WebDriverWait getDefWebDriverWait();
 }

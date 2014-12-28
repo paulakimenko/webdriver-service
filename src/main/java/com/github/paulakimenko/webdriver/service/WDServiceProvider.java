@@ -9,7 +9,6 @@ import org.openqa.selenium.TakesScreenshot;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.chrome.ChromeDriver;
 import org.openqa.selenium.firefox.FirefoxDriver;
-import org.openqa.selenium.firefox.FirefoxProfile;
 import org.openqa.selenium.htmlunit.HtmlUnitDriver;
 import org.openqa.selenium.ie.InternetExplorerDriver;
 import org.openqa.selenium.internal.WrapsDriver;
@@ -84,11 +83,12 @@ public class WDServiceProvider implements WDService {
                 driver = ThreadGuard.protect(new Augmenter().augment(remoteWebDriver));
                 break;
             case FIREFOX:
-                //driver = new FirefoxDriver(capabilities);
-                driver = new FirefoxDriver(new FirefoxProfile());
+                driver = new FirefoxDriver(capabilities);
                 break;
             case CHROME:
-                driver = new ChromeDriver(capabilities);
+                driver = capabilities == null
+                        ? new ChromeDriver(DesiredCapabilities.chrome())
+                        : new ChromeDriver(capabilities);
                 break;
             case SAFARI:
                 driver = capabilities == null
@@ -103,7 +103,9 @@ public class WDServiceProvider implements WDService {
                         ? new OperaDriver()
                         : new OperaDriver(capabilities);
             case HTMLUNIT:
-                driver = new HtmlUnitDriver();
+                driver = capabilities == null
+                        ? new HtmlUnitDriver(DesiredCapabilities.htmlUnitWithJs())
+                        : new HtmlUnitDriver(capabilities);
                 break;
             case PHANTOMJS:
                 driver = capabilities == null
@@ -184,25 +186,22 @@ public class WDServiceProvider implements WDService {
 
     @Override
     public WebDriver getDriver() {
-        if (driver != null)
-            return driver;
-
-        throw new NullPointerException("WebDriver has been not initialized. Try to call init() first.");
+        return driver;
     }
 
     @Override
     public JavascriptExecutor getJsExecutor() {
-        return (JavascriptExecutor) driver;
+        return (JavascriptExecutor) getDriver();
     }
 
     @Override
     public TakesScreenshot getScreenshotMaker() {
-        return (TakesScreenshot) driver;
+        return (TakesScreenshot) getDriver();
     }
 
     @Override
     public WebDriverWait getDefWebDriverWait() {
-        return new WebDriverWait(driver, properties.getFluentWaitTimeout());
+        return new WebDriverWait(getDriver(), properties.getFluentWaitTimeout());
     }
 
     private void setTimeouts(long implicitlyWait, long pageLoadTimeout, long scriptTimeout, TimeUnit timeUnit) {

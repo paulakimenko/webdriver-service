@@ -111,6 +111,10 @@ public final class WDProperties {
         return fluentWaitTimeout;
     }
 
+    /**
+     * Get default WebDriver browser window size.
+     * @return default WebDriver browser window size
+     */
     public String getWindowSize() {
         return windowSize;
     }
@@ -396,6 +400,17 @@ public final class WDProperties {
             return this;
         }
 
+        /**
+         * Set default WebDriver browser window size.
+         * @param windowSize string param for browser window size
+         * <p>
+         * default - for default size
+         * <p>
+         * maximize - maximize to fullscreen
+         * <p>
+         * [x]x[y] - to custom resolution. Example : 1400x900
+         * @return this Builder instance
+         */
         public Builder windowSize(String windowSize) {
             this.windowSize = windowSize;
             return this;
