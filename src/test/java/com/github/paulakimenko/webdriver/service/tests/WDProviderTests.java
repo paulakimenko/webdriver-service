@@ -26,10 +26,9 @@ import static org.testng.Assert.assertNull;
 import static org.testng.Assert.assertTrue;
 
 public class WDProviderTests {
-    @Test(expectedExceptions = {NullPointerException.class},
-            expectedExceptionsMessageRegExp = "WebDriver has been not initialized.*")
+    @Test
     public void baseInitWithNullTest() {
-        WDServiceProvider.getInstance().getDriver();
+        assertNull(WDServiceProvider.getInstance().getDriver());
     }
 
     @Test
@@ -85,8 +84,7 @@ public class WDProviderTests {
         assertTrue(driver instanceof HtmlUnitDriver);
     }
 
-    @Test(expectedExceptions = {NullPointerException.class},
-            expectedExceptionsMessageRegExp = "WebDriver has been not initialized.*")
+    @Test
     public void terminateTest() {
         WDService service = WDServiceProvider.getInstance();
         service.init();
