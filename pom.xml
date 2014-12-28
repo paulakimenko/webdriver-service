@@ -4,7 +4,7 @@
 
     <groupId>com.github.paulakimenko</groupId>
     <artifactId>webdriver-service</artifactId>
-    <version>0.2</version>
+    <version>0.3</version>
     <packaging>jar</packaging>
 
     <name>WebDriver Service Provider</name>
@@ -15,7 +15,7 @@
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <selenium.version>2.44.0</selenium.version>
         <opera.driver.version>1.5</opera.driver.version>
-        <phantomjs.driver.version>1.2.0</phantomjs.driver.version>
+        <phantomjs.driver.version>1.2.1</phantomjs.driver.version>
         <testng.version>6.8.8</testng.version>
     </properties>
 
@@ -138,7 +138,7 @@
             <version>${opera.driver.version}</version>
         </dependency>
         <dependency>
-            <groupId>com.github.detro</groupId>
+            <groupId>com.codeborne</groupId>
             <artifactId>phantomjsdriver</artifactId>
             <version>${phantomjs.driver.version}</version>
         </dependency>
