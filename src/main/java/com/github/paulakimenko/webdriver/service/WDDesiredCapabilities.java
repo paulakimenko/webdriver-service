@@ -45,7 +45,7 @@ public class WDDesiredCapabilities extends DesiredCapabilities implements WDCapa
     }
 
     /**
-     * Build from Map<String, String>.
+     * Build from Map String, String.
      * @param stringMap given map
      */
     public WDDesiredCapabilities(Map<String, String> stringMap) {
