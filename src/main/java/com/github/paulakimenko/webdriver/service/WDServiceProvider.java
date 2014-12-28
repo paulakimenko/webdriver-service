@@ -3,7 +3,6 @@ package com.github.paulakimenko.webdriver.service;
 import com.google.common.base.Function;
 import com.opera.core.systems.OperaDriver;
 import org.openqa.selenium.Capabilities;
-import org.openqa.selenium.Dimension;
 import org.openqa.selenium.JavascriptExecutor;
 import org.openqa.selenium.TakesScreenshot;
 import org.openqa.selenium.WebDriver;
@@ -14,7 +13,7 @@ import org.openqa.selenium.ie.InternetExplorerDriver;
 import org.openqa.selenium.internal.WrapsDriver;
 import org.openqa.selenium.phantomjs.PhantomJSDriver;
 import org.openqa.selenium.remote.Augmenter;
-import org.openqa.selenium.remote.DesiredCapabilities;
+import org.openqa.selenium.remote.BrowserType;
 import org.openqa.selenium.remote.LocalFileDetector;
 import org.openqa.selenium.remote.RemoteWebDriver;
 import org.openqa.selenium.safari.SafariDriver;
@@ -38,11 +37,11 @@ public class WDServiceProvider implements WDService {
     };
 
     private WebDriver driver;
-    private WDProperties properties;
+    private WDCapabilities wdCapabilities;
 
     private WDServiceProvider() {
         driver = null;
-        properties = null;
+        wdCapabilities = WDDesiredCapabilities.getDefault();
     }
 
     /**
@@ -62,59 +61,42 @@ public class WDServiceProvider implements WDService {
 
     @Override
     public void init() {
-        init(null);
-    }
-
-    @Override
-    public void init(Capabilities capabilities) {
         if (driver != null)
             throw new RuntimeException("WebDriver has been already initialized. Terminate it first.");
 
-        if (properties == null)
-            properties = WDProperties.buildFromSystemProperties();
+        if (wdCapabilities.isRemote()) {
+            RemoteWebDriver remoteWebDriver = new RemoteWebDriver(wdCapabilities.getHubUrl(), wdCapabilities);
+            remoteWebDriver.setFileDetector(new LocalFileDetector());
+            driver = ThreadGuard.protect(new Augmenter().augment(remoteWebDriver));
+            return;
+        }
 
-        switch (properties.getDriver()) {
-            case REMOTE:
-                if (capabilities == null)
-                    capabilities = getCapabilitiesByName(properties.getRemoteBrowser());
-
-                RemoteWebDriver remoteWebDriver = new RemoteWebDriver(properties.getRemoteAddress(), capabilities);
-                remoteWebDriver.setFileDetector(new LocalFileDetector());
-                driver = ThreadGuard.protect(new Augmenter().augment(remoteWebDriver));
+        switch (wdCapabilities.getBrowserName()) {
+            case BrowserType.FIREFOX:
+                driver = new FirefoxDriver(wdCapabilities);
                 break;
-            case FIREFOX:
-                driver = new FirefoxDriver(capabilities);
+            case BrowserType.CHROME:
+                driver = new ChromeDriver(wdCapabilities);
                 break;
-            case CHROME:
-                driver = capabilities == null
-                        ? new ChromeDriver(DesiredCapabilities.chrome())
-                        : new ChromeDriver(capabilities);
+            case BrowserType.SAFARI:
+                driver = new SafariDriver(wdCapabilities);
                 break;
-            case SAFARI:
-                driver = capabilities == null
-                        ? new SafariDriver(DesiredCapabilities.safari())
-                        : new SafariDriver(capabilities);
+            case BrowserType.IEXPLORE: case BrowserType.IE:
+                driver = new InternetExplorerDriver(wdCapabilities);
                 break;
-            case IEXPLORE:
-                driver = new InternetExplorerDriver(capabilities);
+            case BrowserType.OPERA:
+                driver = new OperaDriver(wdCapabilities);
                 break;
-            case OPERA:
-                driver = capabilities == null
-                        ? new OperaDriver()
-                        : new OperaDriver(capabilities);
-            case HTMLUNIT:
-                driver = capabilities == null
-                        ? new HtmlUnitDriver(DesiredCapabilities.htmlUnitWithJs())
-                        : new HtmlUnitDriver(capabilities);
+            case BrowserType.HTMLUNIT:
+                driver = new HtmlUnitDriver(wdCapabilities);
                 break;
-            case PHANTOMJS:
-                driver = capabilities == null
-                        ? new PhantomJSDriver(DesiredCapabilities.phantomjs())
-                        : new PhantomJSDriver(capabilities);
+            case BrowserType.PHANTOMJS:
+                driver = new PhantomJSDriver(wdCapabilities);
                 break;
             default:
                 throw new IllegalArgumentException("Given driver type has been not implemented yet.");
         }
+
         changeWindowSize();
         enableTimeouts();
     }
@@ -132,21 +114,16 @@ public class WDServiceProvider implements WDService {
     @Override
     public void enableTimeouts() {
         setTimeouts(
-                properties.getImplicitlyWait(),
-                properties.getPageLoadTimeout(),
-                properties.getScriptTimeout(),
-                properties.getTimeUnit()
+                wdCapabilities.getImplicitlyWait(),
+                wdCapabilities.getPageLoadTimeout(),
+                wdCapabilities.getScriptTimeout(),
+                wdCapabilities.getTimeUnit()
         );
     }
 
     @Override
     public void disableTimeouts() {
-        setTimeouts(0, 0, 0, properties.getTimeUnit());
-    }
-
-    @Override
-    public void setProperties(WDProperties properties) {
-        this.properties = properties;
+        setTimeouts(0, 0, 0, wdCapabilities.getTimeUnit());
     }
 
     @Override
@@ -180,6 +157,15 @@ public class WDServiceProvider implements WDService {
     }
 
     @Override
+    public void setCapabilities(Capabilities capabilities) {
+        if (!(capabilities instanceof WDCapabilities)) {
+            wdCapabilities = WDDesiredCapabilities.getDefault().merge(capabilities);
+        } else {
+            this.wdCapabilities = (WDDesiredCapabilities) capabilities;
+        }
+    }
+
+    @Override
     public void setCustomDriver(WebDriver driver) {
         this.driver = driver;
     }
@@ -201,44 +187,25 @@ public class WDServiceProvider implements WDService {
 
     @Override
     public WebDriverWait getDefWebDriverWait() {
-        return new WebDriverWait(getDriver(), properties.getFluentWaitTimeout());
-    }
-
-    private void setTimeouts(long implicitlyWait, long pageLoadTimeout, long scriptTimeout, TimeUnit timeUnit) {
-        WebDriver.Timeouts timeouts = driver.manage().timeouts();
-        timeouts.implicitlyWait(implicitlyWait, timeUnit);
-        timeouts.pageLoadTimeout(pageLoadTimeout, timeUnit);
-        timeouts.setScriptTimeout(scriptTimeout, timeUnit);
+        if (getDriver() == null || wdCapabilities == null)
+            return null;
+        return new WebDriverWait(getDriver(), wdCapabilities.getFluentWaitTimeout());
     }
 
     private void changeWindowSize() {
-        String windowSize = properties.getWindowSize().toLowerCase();
-
-        switch (windowSize) {
-            case "":
-            case Window.DEFAULT:
-                break;
-            case Window.MAXIMIZE:
-                driver.manage().window().maximize();
-                break;
-            default:
-                int[] dimension = Window.dimension(windowSize);
-                driver.manage().window().setSize(new Dimension(dimension[0], dimension[1]));
+        Window window = wdCapabilities.getWindow();
+        if (Size.MAXIMIZE.equals(window.getSize())) {
+            driver.manage().window().maximize();
+        } else if (Size.CUSTOM.equals(window.getSize())) {
+            driver.manage().window().setSize(window.getCustomSize());
         }
+        driver.manage().window().setPosition(window.getPosition());
     }
 
-    private static Capabilities getCapabilitiesByName(String capabilityName) {
-        try {
-            return (Capabilities) DesiredCapabilities.class
-                    .getMethod(capabilityName, null).invoke(null, null);
-        } catch (IllegalAccessException | InvocationTargetException e) {
-            e.printStackTrace();
-        } catch (NoSuchMethodException e) {
-            throw new IllegalArgumentException("Incorrect browser name for capabilities. " +
-                    "Set it from org.openqa.selenium.remote.DesiredCapabilities static methods names " +
-                    "(ex. firefox).", e);
-        }
-
-        return null;
+    private void setTimeouts(long implicitlyWait, long pageLoadTimeout, long scriptTimeout, TimeUnit timeUnit) {
+        WebDriver.Timeouts timeouts = getDriver().manage().timeouts();
+        timeouts.implicitlyWait(implicitlyWait, timeUnit);
+        timeouts.pageLoadTimeout(pageLoadTimeout, timeUnit);
+        timeouts.setScriptTimeout(scriptTimeout, timeUnit);
     }
 }

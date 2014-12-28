@@ -1,23 +1,21 @@
-package com.github.paulakimenko.webdriver.service.tests;
+package com.github.paulakimenko.webdriver.service;
 
-import com.github.paulakimenko.webdriver.service.PropertyKey;
-import com.github.paulakimenko.webdriver.service.WDProperties;
-import com.github.paulakimenko.webdriver.service.WDServiceProvider;
-import com.github.paulakimenko.webdriver.service.Driver;
-import com.github.paulakimenko.webdriver.service.WDService;
 import com.google.common.base.Function;
 import org.openqa.selenium.By;
+import org.openqa.selenium.Capabilities;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.firefox.FirefoxDriver;
 import org.openqa.selenium.htmlunit.HtmlUnitDriver;
 import org.openqa.selenium.internal.WrapsDriver;
+import org.openqa.selenium.phantomjs.PhantomJSDriver;
+import org.openqa.selenium.remote.BrowserType;
+import org.openqa.selenium.remote.CapabilityType;
+import org.openqa.selenium.remote.DesiredCapabilities;
 import org.testng.annotations.AfterMethod;
 import org.testng.annotations.Test;
 
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 import java.util.Set;
 
 import static org.testng.Assert.assertEquals;
@@ -28,7 +26,11 @@ import static org.testng.Assert.assertTrue;
 public class WDProviderTests {
     @Test
     public void baseInitWithNullTest() {
-        assertNull(WDServiceProvider.getInstance().getDriver());
+        WDService service = WDServiceProvider.getInstance();
+        assertNull(service.getDriver());
+        assertNull(service.getJsExecutor());
+        assertNull(service.getScreenshotMaker());
+        assertNull(service.getDefWebDriverWait());
     }
 
     @Test
@@ -36,8 +38,7 @@ public class WDProviderTests {
         WDService service = WDServiceProvider.getInstance();
         service.init();
         WebDriver driver = service.getDriver();
-        assertNotNull(driver);
-        assertTrue(driver instanceof FirefoxDriver);
+        assertEquals(driver.getClass(), FirefoxDriver.class);
     }
 
     @Test(expectedExceptions = {RuntimeException.class},
@@ -45,43 +46,29 @@ public class WDProviderTests {
     public void doubleInitTest() {
         WDService service = WDServiceProvider.getInstance();
         service.init();
+        WebDriver driver = service.getDriver();
+        assertEquals(driver.getClass(), FirefoxDriver.class);
         service.init();
     }
 
     @Test
-    public void fromBuilderInitTest() {
+    public void initWithCustomCapabilitiesTest() {
+        Capabilities capabilities = DesiredCapabilities.phantomjs();
         WDService service = WDServiceProvider.getInstance();
-        service.setProperties(
-                new WDProperties.Builder()
-                        .driver(Driver.FIREFOX)
-                        .build()
-        );
+        service.setCapabilities(capabilities);
         service.init();
         WebDriver driver = service.getDriver();
-        assertNotNull(driver);
-        assertTrue(driver instanceof FirefoxDriver);
-    }
-
-    @Test
-    public void fromMapInitTest() {
-        WDService service = WDServiceProvider.getInstance();
-        Map<String, String> map = new HashMap<>();
-        map.put(PropertyKey.DRIVER, "firefox");
-        service.setProperties(new WDProperties.Builder(map).build());
-        service.init();
-        WebDriver driver = service.getDriver();
-        assertNotNull(driver);
-        assertTrue(driver instanceof FirefoxDriver);
+        assertEquals(driver.getClass(), PhantomJSDriver.class);
     }
 
     @Test
     public void fromSysPropsInitTest() {
+        System.setProperty(CapabilityType.BROWSER_NAME, BrowserType.PHANTOMJS);
         WDService service = WDServiceProvider.getInstance();
-        System.setProperty(PropertyKey.DRIVER, "htmlunit");
+        service.setCapabilities(WDDesiredCapabilities.getFromSystemProperties());
         service.init();
         WebDriver driver = service.getDriver();
-        assertNotNull(driver);
-        assertTrue(driver instanceof HtmlUnitDriver);
+        assertEquals(driver.getClass(), PhantomJSDriver.class);
     }
 
     @Test
@@ -99,10 +86,7 @@ public class WDProviderTests {
         service.init();
         assertNotNull(service.getDriver());
         service.wrapWith(MockWrapsWebDriverImpl.class);
-        assertTrue(service.getDriver() instanceof WebDriver);
-        assertTrue(service.getDriver() instanceof WrapsDriver);
         assertTrue(service.getDriver() instanceof MockWrapsWebDriverImpl);
-        assertTrue(((WrapsDriver) service.getDriver()).getWrappedDriver() instanceof FirefoxDriver);
     }
 
     @Test
@@ -116,19 +100,14 @@ public class WDProviderTests {
                 return new MockWrapsWebDriverImpl(input);
             }
         });
-        assertTrue(service.getDriver() instanceof WebDriver);
-        assertTrue(service.getDriver() instanceof WrapsDriver);
         assertTrue(service.getDriver() instanceof MockWrapsWebDriverImpl);
-        assertTrue(((WrapsDriver) service.getDriver()).getWrappedDriver() instanceof FirefoxDriver);
     }
 
     @Test
     public void setCustomDriverTest() {
         WDService service = WDServiceProvider.getInstance();
-        WebDriver driver = new HtmlUnitDriver();
-        service.setCustomDriver(driver);
-        assertNotNull(service.getDriver());
-        assertEquals(service.getDriver(), driver);
+        service.setCustomDriver(new HtmlUnitDriver());
+        assertEquals(service.getDriver().getClass(), HtmlUnitDriver.class);
     }
 
     @Test
@@ -153,15 +132,37 @@ public class WDProviderTests {
     }
 
     @Test
-    public void singleThreadingInstanceTest() {
-        WDService service = WDServiceProvider.getInstance();
-        service.init();
-        assertEquals(WDServiceProvider.getInstance().getDriver(), service.getDriver());
+    public void windowTest() {
+        String paramsInStr = "1400x900 on 10x15";
+        Window window = Window.valueOf(paramsInStr);
+        assertNotNull(window);
+        assertEquals(window.getSize(), Size.CUSTOM);
+        assertEquals(window.getCustomSize().getHeight(), 900);
+        assertEquals(window.getCustomSize().getWidth(), 1400);
+        assertEquals(window.getPosition().getX(), 10);
+        assertEquals(window.getPosition().getY(), 15);
     }
 
     @Test
-    public void multiThreadingInstanceTest() {
-        //TODO: this
+    public void windowTest2() {
+        String paramsInStr = "maximize on 10x15";
+        Window window = Window.valueOf(paramsInStr);
+        assertNotNull(window);
+        assertEquals(window.getSize(), Size.MAXIMIZE);
+        assertNull(window.getCustomSize());
+        assertEquals(window.getPosition().getX(), 10);
+        assertEquals(window.getPosition().getY(), 15);
+    }
+
+    @Test
+    public void windowTest3() {
+        String paramsInStr = "default";
+        Window window = Window.valueOf(paramsInStr);
+        assertNotNull(window);
+        assertEquals(window.getSize(), Size.DEFAULT);
+        assertNull(window.getCustomSize());
+        assertEquals(window.getPosition().getX(), 0);
+        assertEquals(window.getPosition().getY(), 0);
     }
 
     @AfterMethod
@@ -169,8 +170,8 @@ public class WDProviderTests {
         try {
             WDService service = WDServiceProvider.getInstance();
             service.terminate();
-            service.setProperties(null);
-            System.clearProperty(PropertyKey.DRIVER);
+            service.setCapabilities(null);
+            System.clearProperty(CapabilityType.BROWSER_NAME);
         } catch (NullPointerException ignored) {}
     }
 
