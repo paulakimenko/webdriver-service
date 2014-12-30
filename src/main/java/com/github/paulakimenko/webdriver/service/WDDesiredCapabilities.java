@@ -45,7 +45,7 @@ public class WDDesiredCapabilities extends DesiredCapabilities implements WDCapa
     }
 
     /**
-     * Build from Map<String, String>.
+     * Build from Map String, String.
      * @param stringMap given map
      */
     public WDDesiredCapabilities(Map<String, String> stringMap) {
@@ -75,9 +75,17 @@ public class WDDesiredCapabilities extends DesiredCapabilities implements WDCapa
         }
     }
 
+    public void setRemote(boolean remote) {
+        setCapability(WDCapabilityType.REMOTE, remote);
+    }
+
     @Override
     public boolean isRemote() {
         return is(WDCapabilityType.REMOTE);
+    }
+
+    public void setHubUrl(URL hubUrl) {
+        setCapability(WDCapabilityType.HUB_URL, String.valueOf(hubUrl));
     }
 
     @Override
@@ -91,6 +99,10 @@ public class WDDesiredCapabilities extends DesiredCapabilities implements WDCapa
         return null;
     }
 
+    public void setTimeUnit(TimeUnit timeUnit) {
+        setCapability(WDCapabilityType.TIME_UNIT, timeUnit.toString());
+    }
+
     @Override
     public TimeUnit getTimeUnit() {
         Object capability = getCapability(WDCapabilityType.TIME_UNIT);
@@ -99,9 +111,17 @@ public class WDDesiredCapabilities extends DesiredCapabilities implements WDCapa
                 : TimeUnit.valueOf(String.valueOf(getCapability(WDCapabilityType.TIME_UNIT)).toUpperCase());
     }
 
+    public void setImplicitlyWait(long implicitlyWait) {
+        setCapability(WDCapabilityType.IMPLICITLY_WAIT, String.valueOf(implicitlyWait));
+    }
+
     @Override
     public long getImplicitlyWait() {
         return getDigitsFromString(String.valueOf(getCapability(WDCapabilityType.IMPLICITLY_WAIT)));
+    }
+
+    public void setPageLoadTimeout(long pageLoadTimeout) {
+        setCapability(WDCapabilityType.PAGE_LOAD_TIMEOUT, String.valueOf(pageLoadTimeout));
     }
 
     @Override
@@ -109,14 +129,26 @@ public class WDDesiredCapabilities extends DesiredCapabilities implements WDCapa
         return getDigitsFromString(String.valueOf(getCapability(WDCapabilityType.PAGE_LOAD_TIMEOUT)));
     }
 
+    public void setScriptTimeout(long scriptTimeout) {
+        setCapability(WDCapabilityType.SCRIPT_TIMEOUT, String.valueOf(scriptTimeout));
+    }
+
     @Override
     public long getScriptTimeout() {
         return getDigitsFromString(String.valueOf(getCapability(WDCapabilityType.SCRIPT_TIMEOUT)));
     }
 
+    public void setFluentWaitTimeout(long fluentWaitTimeout) {
+        setCapability(WDCapabilityType.FLUENT_WAIT_TIMEOUT, String.valueOf(fluentWaitTimeout));
+    }
+
     @Override
     public long getFluentWaitTimeout() {
         return getDigitsFromString(String.valueOf(getCapability(WDCapabilityType.FLUENT_WAIT_TIMEOUT)));
+    }
+
+    public void setWindow(Window window) {
+        setCapability(WDCapabilityType.WINDOW, window.toString());
     }
 
     @Override

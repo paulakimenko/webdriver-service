@@ -29,7 +29,7 @@ import java.util.concurrent.TimeUnit;
  * Uses java.lang.ThreadLocal for generating of thread local instances.
  */
 public class WDServiceProvider implements WDService {
-    private static final ThreadLocal<WDService> THREAD_LOCAL = new ThreadLocal<WDService>() {
+    private static ThreadLocal<WDService> threadLocal = new ThreadLocal<WDService>() {
             @Override
             public WDService initialValue() {
                 return new WDServiceProvider();
@@ -49,14 +49,14 @@ public class WDServiceProvider implements WDService {
      * @return single instance of WDService for current thread
      */
     public static WDService getInstance() {
-        return THREAD_LOCAL.get();
+        return threadLocal.get();
     }
 
     /**
      * Remove current thread instance.
      */
     public static void removeInstance() {
-        THREAD_LOCAL.remove();
+        threadLocal.remove();
     }
 
     @Override
