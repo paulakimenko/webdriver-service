@@ -4,8 +4,11 @@ package com.github.paulakimenko.webdriver.service;
  * WDCapabilities key names
  */
 public final class WDCapabilityType {
+
+    private WDCapabilityType() {}
+
     public static final String WEB_DRIVER_FACTORY = "webdriver.service.";
-    public static final String REMOTE = "remote";
+    public static final String REMOTE = WEB_DRIVER_FACTORY + "remote";
     public static final String HUB_URL = WEB_DRIVER_FACTORY + "hubUrl";
     public static final String TIME_UNIT = WEB_DRIVER_FACTORY + "timeUnit";
     public static final String IMPLICITLY_WAIT = WEB_DRIVER_FACTORY + "implicitlyWait";
