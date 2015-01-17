@@ -68,35 +68,34 @@ public class WDServiceProvider implements WDService {
             RemoteWebDriver remoteWebDriver = new RemoteWebDriver(wdCapabilities.getHubUrl(), wdCapabilities);
             remoteWebDriver.setFileDetector(new LocalFileDetector());
             driver = ThreadGuard.protect(new Augmenter().augment(remoteWebDriver));
-            return;
+        } else {
+            switch (wdCapabilities.getBrowserName()) {
+                case BrowserType.FIREFOX:
+                    driver = new FirefoxDriver(wdCapabilities);
+                    break;
+                case BrowserType.CHROME:
+                    driver = new ChromeDriver(wdCapabilities);
+                    break;
+                case BrowserType.SAFARI:
+                    driver = new SafariDriver(wdCapabilities);
+                    break;
+                case BrowserType.IEXPLORE:
+                case BrowserType.IE:
+                    driver = new InternetExplorerDriver(wdCapabilities);
+                    break;
+                case BrowserType.OPERA:
+                    driver = new OperaDriver(wdCapabilities);
+                    break;
+                case BrowserType.HTMLUNIT:
+                    driver = new HtmlUnitDriver(wdCapabilities);
+                    break;
+                case BrowserType.PHANTOMJS:
+                    driver = new PhantomJSDriver(wdCapabilities);
+                    break;
+                default:
+                    throw new IllegalArgumentException("Given driver type has been not implemented yet.");
+            }
         }
-
-        switch (wdCapabilities.getBrowserName()) {
-            case BrowserType.FIREFOX:
-                driver = new FirefoxDriver(wdCapabilities);
-                break;
-            case BrowserType.CHROME:
-                driver = new ChromeDriver(wdCapabilities);
-                break;
-            case BrowserType.SAFARI:
-                driver = new SafariDriver(wdCapabilities);
-                break;
-            case BrowserType.IEXPLORE: case BrowserType.IE:
-                driver = new InternetExplorerDriver(wdCapabilities);
-                break;
-            case BrowserType.OPERA:
-                driver = new OperaDriver(wdCapabilities);
-                break;
-            case BrowserType.HTMLUNIT:
-                driver = new HtmlUnitDriver(wdCapabilities);
-                break;
-            case BrowserType.PHANTOMJS:
-                driver = new PhantomJSDriver(wdCapabilities);
-                break;
-            default:
-                throw new IllegalArgumentException("Given driver type has been not implemented yet.");
-        }
-
         changeWindowSize();
         enableTimeouts();
     }
